@@ -52,13 +52,7 @@ public class CollectionWorker {
     /**
      * Список команд доступных для вызова
      */
-    private final Set<String> validCommands = Set.of(
-            "help", "info", "show", "add", "update",
-            "remove_by_id", "clear", "save", "execute_script",
-            "exit", "remove_at", "remove_greater", "sort",
-            "remove_all_by_capacity", "count_by_fuel_type",
-            "filter_less_than_capacity"
-    );
+    private final Set<String> validCommands;
     /**
      * Файл из которого загружается коллекция
      */
@@ -77,6 +71,9 @@ public class CollectionWorker {
             System.out.println("Некорректный файл!");
             System.exit(0);
         }
+        validCommands = new TreeSet<>();
+        String valid = "help info show add update remove_by_id clear save execute_script exit remove_at remove_greater sort remove_all_by_capacity count_by_fuel_type filter_less_than_capacity";
+        validCommands.addAll(Arrays.asList(valid.split(" ")));
     }
 
     /**
@@ -151,7 +148,11 @@ public class CollectionWorker {
 
             long id;
 
-            id = Objects.requireNonNullElseGet(ID, () -> collection.getNewId());
+            if (ID != null) {
+                id = ID;
+            } else {
+                id = collection.getNewId();
+            }
 
             return new Vehicle(
                     id,
