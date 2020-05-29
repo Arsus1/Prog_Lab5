@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<vehicles>
+    <vehicle>
+        <id>1</id>
+        <name>ZAPOROJETS</name>
+        <coordinates>
+            <x>1.4f</x>
+            <y>14</y>
+        </coordinates>
+        <creationDate>2020-02-27</creationDate>
+        <enginePower>1</enginePower>
+        <capacity>2</capacity>
+        <distanceTravelled>40.4</distanceTravelled>
+        <fuelType>GASOLINE</fuelType>
+    </vehicle>
+</vehicles>
