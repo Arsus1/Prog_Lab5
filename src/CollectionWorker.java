@@ -74,7 +74,7 @@ public class CollectionWorker {
             this.f = f;
             executing_scripts = new ArrayList<>();
         } catch (IOException | ParserConfigurationException | SAXException | ParseException e) {
-            System.out.println("Некорректное имя файла!");
+            System.out.println("Некорректный файл!");
             System.exit(0);
         }
     }
