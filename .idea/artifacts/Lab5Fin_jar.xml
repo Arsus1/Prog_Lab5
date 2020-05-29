@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Lab5Fin:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Lab5Fin_jar</output-path>
+    <root id="archive" name="Lab5Fin.jar">
+      <element id="module-output" name="Lab5Fin" />
+    </root>
+  </artifact>
+</component>

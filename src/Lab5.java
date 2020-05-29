@@ -7,7 +7,8 @@ import java.io.File;
  */
 public class Lab5 {
     public static void main(String[] args) {
-        File f = new File("test.xml");
+        String fname = System.getenv("input");
+        File f = new File(fname);
         CollectionWorker worker = new CollectionWorker(f);
         worker.processCommands(System.in);
         // Обработка команд, передающихся из потока ввода
