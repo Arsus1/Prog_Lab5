@@ -48,4 +48,16 @@
 <distanceTravelled>23.0</distanceTravelled>
 <fuelType>GASOLINE</fuelType>
 </vehicle>
+<vehicle>
+<id>6</id>
+<name>Zalupa</name>
+<coordinates>
+<x>0.0</x>
+<y>0</y>
+</coordinates>
+<creationDate>2020-06-03</creationDate><enginePower>228.0</enginePower>
+<capacity>228.0</capacity>
+<distanceTravelled>1488.0</distanceTravelled>
+<fuelType>PLASMA</fuelType>
+</vehicle>
 </vehicles>

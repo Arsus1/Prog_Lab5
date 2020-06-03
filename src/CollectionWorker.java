@@ -132,18 +132,25 @@ public class CollectionWorker {
      */
     private Vehicle readVehicle(Scanner scanner, Long ID) {
         try {
+            System.out.print("Введите имя: ");
             String name = scanner.next();
 
+            System.out.print("Введите значение поля x: ");
             float x = readFloatBounds(scanner, "Некорректное значение поля x. " + TRY_AGAIN, MIN_F, MAX_F);
 
+            System.out.print("Введите значение поля y: ");
             long y = readLongBounds(scanner, "Некорректное значение поля y. " + TRY_AGAIN, MIN_L, MAX_L);
 
+            System.out.print("Введите Мощность двигателя: ");
             float enginePower = readFloatBounds(scanner, "Некорректное значение поля enginePower. " + TRY_AGAIN, 0, Float.MAX_VALUE);
 
+            System.out.print("Введите объём двигателя: ");
             float capacity = readFloatBounds(scanner, "Некорректное значение поля capacity. " + TRY_AGAIN, 0, Float.MAX_VALUE);
 
+            System.out.print("Введите пробег: ");
             double distanceTravelled = readDoubleBounds(scanner, "Некорректное значение поля distanceTravelled. " + TRY_AGAIN, 0, Double.MAX_VALUE);
 
+            System.out.print("Введите тип топлива GASOLINE/NUCLEAR/PLASMA: ");
             FuelType fuelType = readFuelType(scanner, "Некорректное значение поля fuelType. " + TRY_AGAIN);
 
             long id;
