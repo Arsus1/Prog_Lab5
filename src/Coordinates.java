@@ -13,7 +13,6 @@ public class Coordinates {
     Coordinates(float x, long y) {
         this.x = x;
         this.y = y;
-
         assert x <= 940 : "Координата X должна быть меньше 940!";
         assert y <= 407 : "Координата Y должна быть меньше 407!";
     }

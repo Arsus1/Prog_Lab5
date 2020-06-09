@@ -22,7 +22,7 @@ public class Vehicle implements Comparable {
 
     /**Дата создания.
      * */
-    private java.time.LocalDate creationDate;
+    private LocalDate creationDate;
 
     /**Мощность двигателя.
      * */
@@ -54,7 +54,7 @@ public class Vehicle implements Comparable {
      * @param fuelType Тип топлива.
      */
     Vehicle(Long id, String name, Coordinates coordinates, float enginePower, Float capacity
-            , Double distanceTravelled, FuelType fuelType) {
+            , Double distanceTravelled, FuelType fuelType) throws NumberFormatException {
         this.name = name;
         this.coordinates = coordinates;
         this.enginePower = enginePower;
@@ -68,14 +68,9 @@ public class Vehicle implements Comparable {
 
         dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
-        assert id != null : "ID объекта не может быть пустым";
-        assert name != null : "Имя не может быть пустым!";
-        assert !name.equals("") : "Имя должно быть введено";
-        assert coordinates != null : "Координаты не могут быть нулевыми!";
-        assert enginePower > 0 : "Мощность двигателя должна быть больше нуля";
-        assert capacity != null : "Емкость двигателя не может быть нулевой";
-        assert capacity > 0 : "Емкость двигателя должна быть больше нуля";
-        assert distanceTravelled > 0 : "Дистанция должна быть больше нуля!";
+        if (!(coordinates.getX() <= 940 && coordinates.getY() <= 407 && id != null && name != null && name.length() > 0 && enginePower > 0 && capacity > 0 && distanceTravelled > 0)) {
+            throw new NumberFormatException();
+        }
     }
 
     /**Getter ID

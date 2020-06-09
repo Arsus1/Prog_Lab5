@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
@@ -13,8 +15,8 @@ public class Lab5 {
         try {
             File f = new File(fname);
             CollectionWorker worker = new CollectionWorker(f);
-            worker.processCommands(System.in);
-        } catch (NullPointerException e) {
+            worker.processCommands(new InputStreamReader(System.in));
+        } catch (NullPointerException | IOException e) {
             System.out.println("Файл не найден!");
         }
 

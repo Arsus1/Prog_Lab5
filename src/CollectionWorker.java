@@ -2,7 +2,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -56,6 +55,8 @@ public class CollectionWorker {
     /**
      * Файл из которого загружается коллекция
      */
+
+    private char WHITESPACE = ' ';
     File f;
     ArrayList<String> executing_scripts;
 
@@ -67,7 +68,7 @@ public class CollectionWorker {
             collection = new VehicleCollection(f);
             this.f = f;
             executing_scripts = new ArrayList<>();
-        } catch (IOException | ParserConfigurationException | SAXException | ParseException e) {
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             System.out.println("Некорректный файл!");
             System.exit(0);
         }
@@ -116,9 +117,9 @@ public class CollectionWorker {
      */
     public void executeScript(String fname) {
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(fname));
+            InputStreamReader fileInputStream = new InputStreamReader(new FileInputStream(new File(fname)));
             processCommands(fileInputStream);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Неправильно указан путь! Попробуйте снова :(");
         }
     }
@@ -126,32 +127,32 @@ public class CollectionWorker {
     /**
      * <p>Проверка, введено ли корректное значение в поле.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param ID      Берётся ID коллекции.
      * @return Vehicle, если считывание выполнено успешно или null, если ошибка.
      */
-    private Vehicle readVehicle(Scanner scanner, Long ID) {
+    private Vehicle readVehicle(InputStreamReader reader, Long ID) {
         try {
             System.out.print("Введите имя: ");
-            String name = scanner.next();
+            String name = next(WHITESPACE, reader);
 
             System.out.print("Введите значение поля x: ");
-            float x = readFloatBounds(scanner, "Некорректное значение поля x. " + TRY_AGAIN, MIN_F, MAX_F);
+            float x = readFloatBounds(reader, "Некорректное значение поля x. " + TRY_AGAIN, MIN_F, MAX_F);
 
             System.out.print("Введите значение поля y: ");
-            long y = readLongBounds(scanner, "Некорректное значение поля y. " + TRY_AGAIN, MIN_L, MAX_L);
+            long y = readLongBounds(reader, "Некорректное значение поля y. " + TRY_AGAIN, MIN_L, MAX_L);
 
             System.out.print("Введите Мощность двигателя: ");
-            float enginePower = readFloatBounds(scanner, "Некорректное значение поля enginePower. " + TRY_AGAIN, 0, Float.MAX_VALUE);
+            float enginePower = readFloatBounds(reader, "Некорректное значение поля enginePower. " + TRY_AGAIN, 0, Float.MAX_VALUE);
 
             System.out.print("Введите объём двигателя: ");
-            float capacity = readFloatBounds(scanner, "Некорректное значение поля capacity. " + TRY_AGAIN, 0, Float.MAX_VALUE);
+            float capacity = readFloatBounds(reader, "Некорректное значение поля capacity. " + TRY_AGAIN, 0, Float.MAX_VALUE);
 
             System.out.print("Введите пробег: ");
-            double distanceTravelled = readDoubleBounds(scanner, "Некорректное значение поля distanceTravelled. " + TRY_AGAIN, 0, Double.MAX_VALUE);
+            double distanceTravelled = readDoubleBounds(reader, "Некорректное значение поля distanceTravelled. " + TRY_AGAIN, 0, Double.MAX_VALUE);
 
             System.out.print("Введите тип топлива GASOLINE/NUCLEAR/PLASMA: ");
-            FuelType fuelType = readFuelType(scanner, "Некорректное значение поля fuelType. " + TRY_AGAIN);
+            FuelType fuelType = readFuelType(reader, "Некорректное значение поля fuelType. " + TRY_AGAIN);
 
             long id;
 
@@ -170,7 +171,7 @@ public class CollectionWorker {
                     distanceTravelled,
                     fuelType
             );
-        } catch (NumberFormatException | NoSuchElementException e) {
+        } catch (NumberFormatException | NoSuchElementException | IOException e) {
             System.out.println("Введены некорректные данные! Введите корректные данные");
         }
         return null;
@@ -179,18 +180,18 @@ public class CollectionWorker {
     /**
      * <p>Считывание до тех пор, пока он не будет введен корректно.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @return dLong, если считывание выполнено успешно или null, если ошибка.
      */
-    private Long readLong(Scanner scanner, String err) {
+    private Long readLong(InputStreamReader reader, String err) {
         long out;
         try {
             while (true) {
                 try {
-                    out = Long.parseLong(scanner.next());
+                    out = Long.parseLong(next(WHITESPACE, reader));
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -203,23 +204,23 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно и определение, находится ли он в допустимом диапазоне</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @param min     Минимально допустимое значение.
      * @param max     Максимально допустимое значение.
      * @return Long, если считывание выполнено успешно или null, если ошибка.
      */
-    private Long readLongBounds(Scanner scanner, String err, long min, long max) {
+    private Long readLongBounds(InputStreamReader reader, String err, long min, long max) {
         long out;
         try {
             while (true) {
                 try {
-                    out = Long.parseLong(scanner.next());
+                    out = Long.parseLong(next(WHITESPACE, reader));
                     if (out > max || out < min) {
                         throw new NumberFormatException();
                     }
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -232,17 +233,17 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно и определение, находится ли он в допустимом диапазоне</p>
      *
-     * @param scanner  Данные из потока ввода.
+     * @param reader  Данные из потока ввода.
      * @param err      Текст ошибки.
      * @param contains Параметр, указывающий на то, предполагается ли нахождение в коллекции.
      * @return Long, если считывание выполнено успешно или null, если ошибка.
      */
-    private Long readId(Scanner scanner, String err, boolean contains) {
+    private Long readId(InputStreamReader reader, String err, boolean contains) {
         long out;
         try {
             while (true) {
                 try {
-                    out = Long.parseLong(scanner.next());
+                    out = Long.parseLong(next(WHITESPACE, reader));
                     if (contains && collection.numId() == 0) {
                         System.out.println(EMPTY_COLLECTION);
                         return null;
@@ -251,7 +252,7 @@ public class CollectionWorker {
                         throw new NumberFormatException();
                     }
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -268,18 +269,18 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @return Float, если считывание выполнено успешно или null, если ошибка.
      */
-    private Float readFloat(Scanner scanner, String err) {
+    private Float readFloat(InputStreamReader reader, String err) {
         float out;
         try {
             while (true) {
                 try {
-                    out = Float.parseFloat(scanner.next());
+                    out = Float.parseFloat(next(WHITESPACE, reader));
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -292,23 +293,23 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно, проверка допустимости значения.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @param min     Минимально возможное значение.
      * @param max     Максимально возможное значение.
      * @return Float, если считывание выполнено успешно или null, если ошибка.
      */
-    private Float readFloatBounds(Scanner scanner, String err, float min, float max) {
+    private Float readFloatBounds(InputStreamReader reader, String err, float min, float max) {
         float out;
         try {
             while (true) {
                 try {
-                    out = Float.parseFloat(scanner.next());
+                    out = Float.parseFloat(next(WHITESPACE, reader));
                     if (out > max || out < min) {
                         throw new NumberFormatException();
                     }
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -321,18 +322,18 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @return Integer, если считывание выполнено успешно или null, если ошибка.
      */
-    private Integer readInteger(Scanner scanner, String err) {
+    private Integer readInteger(InputStreamReader reader, String err) {
         int out;
         try {
             while (true) {
                 try {
-                    out = Integer.parseInt(scanner.next());
+                    out = Integer.parseInt(next(WHITESPACE, reader));
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -345,18 +346,18 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @return FuelType, если считывание выполнено успешно или null, если ошибка.
      */
-    private FuelType readFuelType(Scanner scanner, String err) {
+    private FuelType readFuelType(InputStreamReader reader, String err) {
         FuelType out;
         try {
             while (true) {
                 try {
-                    out = FuelType.parseFuelType(scanner.next());
+                    out = FuelType.parseFuelType(next(WHITESPACE, reader));
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException |IOException e) {
                     System.out.println(err);
                 }
             }
@@ -369,18 +370,18 @@ public class CollectionWorker {
     /**
      * <p>Считывание параметра, до тех пор, пока он не будет введён корректно.</p>
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @return Double, если считывание выполнено успешно или null, если ошибка.
      */
-    private Double readDouble(Scanner scanner, String err) {
+    private Double readDouble(InputStreamReader reader, String err) {
         double out;
         try {
             while (true) {
                 try {
-                    out = Double.parseDouble(scanner.next());
+                    out = Double.parseDouble(next(WHITESPACE, reader));
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException |IOException e) {
                     System.out.println(err);
                 }
             }
@@ -393,23 +394,23 @@ public class CollectionWorker {
     /**
      * Считывание параметра, до тех пор, пока он не будет введён корректно, проверка допустимости значения.
      *
-     * @param scanner Данные из потока ввода.
+     * @param reader Данные из потока ввода.
      * @param err     Текст ошибки.
      * @param min     Минимально возможное значение.
      * @param max     Максимально возможное значение.
      * @return Double, если считывание выполнено успешно или null, если ошибка.
      */
-    private Double readDoubleBounds(Scanner scanner, String err, double min, double max) {
+    private Double readDoubleBounds(InputStreamReader reader, String err, double min, double max) {
         double out;
         try {
             while (true) {
                 try {
-                    out = Double.parseDouble(scanner.next());
+                    out = Double.parseDouble(next(WHITESPACE, reader));
                     if (out > max || max < min) {
                         throw new NumberFormatException();
                     }
                     return out;
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(err);
                 }
             }
@@ -419,15 +420,34 @@ public class CollectionWorker {
         return null;
     }
 
+    public String next(int start, InputStreamReader reader) throws IOException {
+        int c = start;
+        while (c != -1 && Character.isWhitespace(c)) {
+            c = reader.read();
+        }
+        StringBuilder sb = new StringBuilder();
+        while (c != -1) {
+            if (!Character.isWhitespace(c)) {
+                sb.append((char)c);
+            } else {
+                break;
+            }
+            c = reader.read();
+        }
+        return sb.toString();
+    }
+
     /**
      * Сигнализирование и вывод сообщений об ошибках.
      *
-     * @param stream Входной поток команд
+     * @param reader Входной поток команд
      */
-    public void processCommands(InputStream stream) {
-        Scanner scanner = new Scanner(stream);
-        while (scanner.hasNext()) {
-            String command = scanner.next();
+    public void processCommands(InputStreamReader reader) throws IOException {
+        int i = 0;
+        while (true) {
+            i = reader.read();
+            if (i == -1) break;
+            String command = next(i, reader);
 
             if (validCommands.contains(command)) {
 
@@ -445,7 +465,7 @@ public class CollectionWorker {
                 if (command.equals("execute_script")) {
                     //Expecting 1 param
                     try {
-                        String fname = scanner.next();
+                        String fname = next(WHITESPACE, reader);
                         if (!executing_scripts.contains(fname)) {
                             executing_scripts.add(fname);
                             executeScript(fname);
@@ -465,23 +485,23 @@ public class CollectionWorker {
 
                 if (command.equals("add")) {
                     // Expecting 7 params
-                    Vehicle vehicle = readVehicle(scanner, null);
+                    Vehicle vehicle = readVehicle(reader, null);
                     if (vehicle != null) {
                         collection.add(vehicle);
                     }
                 }
 
                 if (command.equals("update")) {
-                    Long id = readId(scanner, "Введен некорректный id! " + TRY_AGAIN, true);
+                    Long id = readId(reader, "Введен некорректный id! " + TRY_AGAIN, true);
                     if (id != null) {
-                        collection.updateId(id, readVehicle(scanner, id));
+                        collection.updateId(id, readVehicle(reader, id));
                     } else {
                         System.out.println("Invalid arguments! Try again :(");
                     }
                 }
 
                 if (command.equals("remove_by_id")) {
-                    Long id = readId(scanner, "Введен некорректный id! " + TRY_AGAIN, true);
+                    Long id = readId(reader, "Введен некорректный id! " + TRY_AGAIN, true);
                     if (id != null) {
                         collection.removeById(id);
                     } else {
@@ -502,7 +522,7 @@ public class CollectionWorker {
                 }
 
                 if (command.equals("remove_at")) {
-                    Integer index = readInteger(scanner, "Некорректный индекс! " + TRY_AGAIN);
+                    Integer index = readInteger(reader, "Некорректный индекс! " + TRY_AGAIN);
                     if (index != null) {
                         collection.removeAtIndex(index);
                     } else {
@@ -512,7 +532,7 @@ public class CollectionWorker {
 
                 if (command.equals("remove_greatest")) {
                     try {
-                        Vehicle vehicle = readVehicle(scanner, -1L);
+                        Vehicle vehicle = readVehicle(reader, -1L);
                         if (vehicle != null) {
                             collection.removeGreaterCapacity(vehicle);
                         }
@@ -526,7 +546,7 @@ public class CollectionWorker {
                 }
 
                 if (command.equals("remove_all_by_capacity")) {
-                    Float capacity = readFloatBounds(scanner, "Некорректное значение поля capacity! " + TRY_AGAIN, 0, Float.MAX_VALUE);
+                    Float capacity = readFloatBounds(reader, "Некорректное значение поля capacity! " + TRY_AGAIN, 0, Float.MAX_VALUE);
                     if (capacity != null) {
                         collection.removeAllByCapacity(capacity);
                     } else {
@@ -535,7 +555,7 @@ public class CollectionWorker {
                 }
 
                 if (command.equals("count_by_fuel_type")) {
-                    FuelType fuelType = readFuelType(scanner, "Некорректное значение fuelType " + TRY_AGAIN);
+                    FuelType fuelType = readFuelType(reader, "Некорректное значение fuelType " + TRY_AGAIN);
                     if (fuelType != null) {
                         long num = collection.countByFuelType(fuelType);
                         System.out.println("Количество элементов с типом топлива: " + fuelType + "= " + num);
@@ -545,7 +565,7 @@ public class CollectionWorker {
                 }
 
                 if (command.equals("filter_less_than_capacity")) {
-                    Float capacity = readFloatBounds(scanner, "Некорректное значение поля capacity! " + TRY_AGAIN, 0, Float.MAX_VALUE);
+                    Float capacity = readFloatBounds(reader, "Некорректное значение поля capacity! " + TRY_AGAIN, 0, Float.MAX_VALUE);
                     if (capacity != null) {
                         System.out.println(collection.filterLessThanCapacity(capacity));
                     } else {
