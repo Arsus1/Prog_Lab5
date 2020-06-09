@@ -11,7 +11,9 @@ import java.util.Map;
  */
 public class Lab5 {
     public static void main(String[] args) {
-        String fname = System.getenv("INPUT");
+        //System.setProperty("INPUT", "test.xml");
+        //String fname = System.getenv("INPUT");
+        String fname = "test.xml";
         try {
             File f = new File(fname);
             CollectionWorker worker = new CollectionWorker(f);
